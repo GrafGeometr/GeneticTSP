@@ -1,15 +1,13 @@
 package org.example.operators.population
 
-import org.example.model.Graph
-import org.example.model.Tour
-import org.example.model.Vertex
+import org.example.model.Problem
+import org.example.model.Solution
+import org.example.strategies.evolution.EvolutionCycle
 
-interface PopulationManager<V : Vertex> {
-    fun initialize(graph: Graph<V>)
-    fun addOffspring(offspring: Tour<V>): Boolean
-    fun getAll(): List<Tour<V>>
-    fun getBest(): Tour<V>
+interface PopulationManager<S : Solution, P : Problem<S>> {
+    fun getAll(): List<S>
+    fun getBest(p: P): S
     val size: Int
 
-    fun afterGeneration() {}
+    fun evolve(cycle: EvolutionCycle<S, P>, p: P)
 }

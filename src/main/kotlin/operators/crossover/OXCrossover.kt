@@ -1,11 +1,12 @@
 package org.example.operators.crossover
 
+import org.example.model.TSP
 import org.example.model.Tour
 import org.example.model.Vertex
 import kotlin.random.Random
 
-class OXCrossover : Crossover {
-    override fun <V : Vertex> merge(a: Tour<V>, b: Tour<V>): List<Tour<V>> {
+class OXCrossover<V : Vertex> : Crossover<Tour<V>, TSP<V>> {
+    override fun merge(a: Tour<V>, b: Tour<V>, p: TSP<V>): List<Tour<V>> {
         val n = a.list.size
         val cut1 = Random.nextInt(n)
         val cut2 = Random.nextInt(n)

@@ -1,8 +1,8 @@
 package org.example.operators.crossover
 
-import org.example.model.Tour
-import org.example.model.Vertex
+import org.example.model.Problem
+import org.example.model.Solution
 
-interface Crossover {
-    fun <V : Vertex> merge(a: Tour<V>, b: Tour<V>): List<Tour<V>>
+interface Crossover<S : Solution, P : Problem<S>> {
+    fun merge(a: S, b: S, p: P): List<S>
 }

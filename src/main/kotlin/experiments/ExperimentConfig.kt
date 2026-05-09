@@ -1,21 +1,16 @@
+import org.example.model.TSP
+import org.example.model.Tour
 import org.example.model.Point
-import org.example.operators.crossover.Crossover
-import org.example.operators.localsearch.HillClimbing2Opt
-import org.example.operators.mutation.Mutation
 import org.example.operators.population.PopulationManager
-import org.example.operators.selection.Selection
+import org.example.strategies.evolution.EvolutionCycle
 
 data class ExperimentConfig(
     val name: String,
     val datasetPath: String,
-    val selection: Selection,
-    val crossover: Crossover,
-    val mutation: Mutation?,
-    val localSearch: HillClimbing2Opt?,
-    val mutationRate: Double,
-    val localSearchProbability: Double,
+    val populationManagerFactory: (TSP<Point>) -> PopulationManager<Tour<Point>, TSP<Point>>,
+    val evolutionCycleFactory: () -> EvolutionCycle<Tour<Point>, TSP<Point>>,
     val maxGenerations: Int,
-    val maxStagnation: Int = 50,
-    val repeats: Int = 10,
-    val populationManagerFactory: () -> PopulationManager<Point>
+    val maxStagnation: Int = Int.MAX_VALUE,
+    val repeats: Int = 5,
+    val loggingRate: Int = 10,
 )

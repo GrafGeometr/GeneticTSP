@@ -1,42 +1,33 @@
 package org.example.operators.selection
 
-import org.example.model.Graph
-import org.example.model.Tour
-import org.example.model.Vertex
+import org.example.model.Problem
+import org.example.model.Solution
 import kotlin.random.Random
 
-class UnbiasedParameterizedTournamentSelection(
-    val populationSize: Int,
+class UnbiasedParameterizedTournamentSelection<S : Solution, P : Problem<S>>(
     val sv: Double
-) : Selection {
+) : Selection<S, P> {
     init {
         require(sv in 0.5..1.0) { "sv must be in [0.5, 1.0]" }
     }
 
-    private val indices = mutableListOf<Int>()
-    private var pos = 0
+    override fun select(population: List<S>, p: P): List<Pair<S, S>> {
+        val n = population.size
+        if (n < 2) return emptyList()
 
-    init {
-        resetIndices()
-    }
+        val indices = (0 until n).flatMap { listOf(it, it) }.shuffled(Random)
 
-    private fun resetIndices() {
-        indices.clear()
-        repeat(2) {
-            for (i in 0 until populationSize) indices.add(i)
+        val winners = (0 until 2 * n step 2).map { i ->
+            val t1 = population[indices[i]]
+            val t2 = population[indices[i + 1]]
+            val (better, worse) = if (p.fitness(t1) <= p.fitness(t2)) t1 to t2 else t2 to t1
+            if (Random.nextDouble() < sv) better else worse
         }
-        indices.shuffle()
-        pos = 0
-    }
 
-    override fun <V : Vertex> select(population: List<Tour<V>>, graph: Graph<V>): Tour<V> {
-        if (pos >= indices.size) resetIndices()
-        val i1 = indices[pos]
-        val i2 = indices[pos + 1]
-        pos += 2
-        val t1 = population[i1]
-        val t2 = population[i2]
-        val (better, worse) = if (graph.fitness(t1) <= graph.fitness(t2)) t1 to t2 else t2 to t1
-        return if (Random.nextDouble() < sv) better else worse
+        val shuffledWinners = winners.shuffled(Random)
+
+        return (0 until n step 2).map { i ->
+            shuffledWinners[i] to shuffledWinners[i + 1]
+        }
     }
 }

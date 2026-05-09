@@ -1,4 +1,4 @@
-package org.example.operators.selection
+package org.example.strategies
 
 import org.example.model.Problem
 import org.example.model.Solution
@@ -6,6 +6,6 @@ import org.example.model.TSP
 import org.example.model.Tour
 import org.example.model.Vertex
 
-interface Selection<S : Solution, P : Problem<S>> {
-    fun select(population: List<S>, p: P): List<Pair<S, S>>
+interface Solver<S : Solution, P : Problem<S>> {
+    fun solve(p: P): S
 }

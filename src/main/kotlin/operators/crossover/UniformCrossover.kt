@@ -1,11 +1,12 @@
 package org.example.operators.crossover
 
+import org.example.model.TSP
 import org.example.model.Tour
 import org.example.model.Vertex
 import kotlin.random.Random
 
-class UniformCrossover : Crossover {
-    override fun <V : Vertex> merge(a: Tour<V>, b: Tour<V>): List<Tour<V>> {
+class UniformCrossover<V : Vertex> : Crossover<Tour<V>, TSP<V>> {
+    override fun merge(a: Tour<V>, b: Tour<V>, p: TSP<V>): List<Tour<V>> {
         val n = a.list.size
 
         val mask = BooleanArray(n) { Random.nextBoolean() }
@@ -33,7 +34,7 @@ class UniformCrossover : Crossover {
             } else {
                 val alternative = if (mask[i]) b.list[i] else a.list[i]
                 if (alternative.id !in used) {
-                    childIndexes[i] = Source(!mask[i], i)   // исправлено: фактический источник
+                    childIndexes[i] = Source(!mask[i], i)
                     used.add(alternative.id)
                 }
             }
@@ -50,7 +51,7 @@ class UniformCrossover : Crossover {
             if (childIndexes[i] == null) {
                 val elem = remaining.removeAt(0)
                 childIndexes[i] = Source(elem.second, elem.first)
-                used.add(elem.third.id)   // обязательно отмечаем использованной
+                used.add(elem.third.id)
             }
         }
 

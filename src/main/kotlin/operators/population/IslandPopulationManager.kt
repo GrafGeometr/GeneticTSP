@@ -1,67 +1,55 @@
 package org.example.operators.population
 
 import kotlin.random.Random
-import org.example.model.Graph
-import org.example.model.Tour
-import org.example.model.Vertex
+import org.example.model.Population
+import org.example.model.Problem
+import org.example.model.Solution
+import org.example.strategies.evolution.EvolutionCycle
 
-class IslandPopulationManager<V : Vertex>(
-    val totalPopulationSize: Int,
-    val numberOfIslands: Int,
-    val migrationRate: Double = 0.1,
-    val elitesPerMigration: Int = 2
-) : PopulationManager<V> {
+class IslandPopulationManager<S : Solution, P : Problem<S>>(
+    private val islands: List<Population<S, P>>,
+    private val migrationRate: Double = 0.1,
+    private val elitesPerMigration: Int = 2,
+) : PopulationManager<S, P> {
 
-    private val islands: List<SimplePopulationManager<V>>
-    private val islandSize: Int = totalPopulationSize / numberOfIslands
-    private lateinit var graph: Graph<V>
+    constructor(
+        islandCount: Int,
+        islandCapacity: Int,
+        problem: P,
+        generator: (P) -> S,
+        migrationRate: Double = 0.1,
+        elitesPerMigration: Int = 2
+    ) : this(
+        islands = (0 until islandCount).map {
+            Population<S, P>(islandCapacity).also { pop ->
+                pop.initializeRandom(problem, generator)
+            }
+        },
+        migrationRate = migrationRate,
+        elitesPerMigration = elitesPerMigration
+    )
 
-    init {
-        require(numberOfIslands > 1) { "Островная модель требует минимум 2 острова" }
-        islands = List(numberOfIslands) {
-            SimplePopulationManager<V>(populationSize = islandSize, elitism = true)
-        }
-    }
+    override fun getAll(): List<S> = islands.flatMap { it.getAll() }
 
-    override fun initialize(graph: Graph<V>) {
-        this.graph = graph
-        islands.forEach { it.initialize(graph) }
-    }
+    override fun getBest(p: P): S = islands
+        .mapNotNull { it.getBest(p) }
+        .minByOrNull { p.fitness(it) }
+        ?: throw IllegalStateException("Все острова пусты")
 
-    override fun addOffspring(offspring: Tour<V>): Boolean {
-        val targetIsland = islands.random()
-        return targetIsland.addOffspring(offspring)
-    }
+    override val size: Int get() = islands.sumOf { it.size }
 
-    override fun getAll(): List<Tour<V>> {
-        return islands.flatMap { it.getAll() }
-    }
+    override fun evolve(cycle: EvolutionCycle<S, P>, p: P) {
+        islands.forEach { cycle.execute(it, p) }
 
-    override fun getBest(): Tour<V> {
-        return islands.map { it.getBest() }.minByOrNull { graph.fitness(it) }!!
-    }
-
-    override val size: Int get() = totalPopulationSize
-
-
-    override fun afterGeneration() {
         if (Random.nextDouble() >= migrationRate) return
 
-        for (i in 0 until numberOfIslands) {
-            val fromIsland = islands[i]
-            val toIsland = islands[(i + 1) % numberOfIslands]
-
-            val topTours = fromIsland.getAll()
-                .sortedBy { graph.fitness(it) }
+        for (i in islands.indices) {
+            val from = islands[i]
+            val to = islands[(i + 1) % islands.size]
+            val migrants = from.getAll()
+                .sortedBy { p.fitness(it) }
                 .take(elitesPerMigration)
-
-            topTours.forEach { elite ->
-                val population = toIsland.getAll()
-                if (population.size >= toIsland.size) {
-                    population.indices.maxByOrNull { graph.fitness(population[it]) } ?: return@forEach
-                    toIsland.addOffspring(elite)
-                }
-            }
+            migrants.forEach { elite -> to.replaceWorst(elite, p) }
         }
     }
 }

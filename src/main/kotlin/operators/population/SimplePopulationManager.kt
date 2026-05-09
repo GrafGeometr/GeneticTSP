@@ -1,47 +1,33 @@
 package org.example.operators.population
 
-import org.example.model.Graph
-import org.example.model.Tour
-import org.example.model.Vertex
+import org.example.model.Population
+import org.example.model.Problem
+import org.example.model.Solution
+import org.example.strategies.evolution.EvolutionCycle
 
-class SimplePopulationManager<V : Vertex>(
-    val populationSize: Int,
-    private val elitism: Boolean = true
-) : PopulationManager<V> {
 
-    private val population = mutableListOf<Tour<V>>()
-    private lateinit var graph: Graph<V>
+class SimplePopulationManager<S : Solution, P : Problem<S>>(
+    private val population: Population<S, P>
+) : PopulationManager<S, P> {
 
-    override fun initialize(graph: Graph<V>) {
-        this.graph = graph
-        population.clear()
-        repeat(populationSize) {
-            population.add(Tour.random(graph))
+    constructor(
+        capacity: Int,
+        problem: P,
+        generator: (P) -> S
+    ) : this(
+        Population<S, P>(capacity).also { pop ->
+            pop.initializeRandom(problem, generator)
         }
-    }
+    )
 
-    override fun addOffspring(offspring: Tour<V>): Boolean {
-        val fitnessOffspring = graph.fitness(offspring)
+    override fun getAll(): List<S> = population.getAll()
 
-        if (population.size < populationSize) {
-            population.add(offspring)
-            return true
-        }
-
-        val worstIdx = population.indices.maxByOrNull { graph.fitness(population[it]) } ?: return false
-        val worstFitness = graph.fitness(population[worstIdx])
-
-        if (fitnessOffspring >= worstFitness) return false
-
-        population[worstIdx] = offspring
-        return true
-    }
-
-    override fun getAll(): List<Tour<V>> = population
-
-    override fun getBest(): Tour<V> {
-        return population.minByOrNull { graph.fitness(it) }!!
-    }
+    override fun getBest(p: P): S = population.getBest(p)
+        ?: throw IllegalStateException("Популяция пуста")
 
     override val size: Int get() = population.size
+
+    override fun evolve(cycle: EvolutionCycle<S, P>, p: P) {
+        cycle.execute(population, p)
+    }
 }

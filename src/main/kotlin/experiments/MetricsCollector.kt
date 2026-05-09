@@ -5,7 +5,7 @@ import org.example.model.Vertex
 import java.io.File
 import java.io.PrintWriter
 
-class MetricsCollector<V : Vertex>(filePath: String) : MetricsCallback<V> {
+class MetricsCollector<V : Vertex>(filePath: String, val loggingRate: Int = 10) : MetricsCallback<V> {
     private val writer = PrintWriter(File(filePath))
 
     init {
@@ -19,8 +19,10 @@ class MetricsCollector<V : Vertex>(filePath: String) : MetricsCallback<V> {
         bestFitness: Double,
         averageFitness: Double
     ) {
-        val uniqueEdges = DiversityUtils.edgeDiversity(population)
-        writer.println("$generation,$bestFitness,$averageFitness,$uniqueEdges")
+        if (generation % loggingRate == 0) {
+            val uniqueEdges = DiversityUtils.edgeDiversity(population)
+            writer.println("$generation,$bestFitness,$averageFitness,$uniqueEdges")
+        }
     }
 
     fun close() {
