@@ -33,4 +33,3 @@ python3 generate_plots.py --dataset tsp_574_1 --algo L01_big
 ```
 
 Готовые изображения сохраняются в папке `plots/`
-```
