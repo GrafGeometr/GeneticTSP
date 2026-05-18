@@ -1,0 +1,29 @@
+{
+  "common": {
+    "maxGenerations": 400,
+    "repeats": 3,
+    "csvLogRate": 10,
+    "consoleLogRate": 10,
+    "logImprovements": true,
+    "noHopeThreshold": 0,
+    "maxStagnation": -1
+  },
+  "algorithms": [
+    {
+      "name": "LS1_population_big",
+      "maxGenerations": 100,
+      "population": { "type": "simple", "capacity": 128 },
+      "cycle": { "type": "classic" },
+      "selection": { "type": "UnbiasedTournament" },
+      "crossover": { "type": "OX" },
+      "mutation": { "type": "Scramble", "rate": 0.1 },
+      "localSearch": { "enabled": true, "probability": 1.0 }
+    }
+  ],
+  "datasets": [
+    {
+      "name": "tsp_574_1",
+      "path": "data/tsp_574_1"
+    }
+  ]
+}

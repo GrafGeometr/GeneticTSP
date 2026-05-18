@@ -1,0 +1,31 @@
+{
+  "common": {
+    "maxGenerations": 1000000,
+    "repeats": 1,
+    "csvLogRate": 100,
+    "consoleLogRate": 100,
+    "logImprovements": true,
+    "noHopeThreshold": 1000,
+    "maxStagnation": -1
+  },
+  "algorithms": [
+    {
+      "name": "Example",
+      "maxGenerations": 1000000,
+      "population": { "type": "island", "islandCount": 4, "islandCapacity": 32, "initialGenerator": "random_ls" },
+      "cycle": { "type": "steady" },
+      "selection": { "type": "SimpleTournament2" },
+      "crossover": { "type": "OX" },
+      "mutation": { "type": "Swap", "rate": 0.5 },
+      "noHopeThreshold": 1000,
+      "rehope": { "type": "Scramble" },
+      "localSearch": { "enabled": true, "probability": 0.0 }
+    }
+  ],
+  "datasets": [
+    {
+      "name": "tsp_574_1",
+      "path": "data/tsp_574_1"
+    }
+  ]
+}

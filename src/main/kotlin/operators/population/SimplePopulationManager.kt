@@ -3,22 +3,26 @@ package org.example.operators.population
 import org.example.model.Population
 import org.example.model.Problem
 import org.example.model.Solution
+import org.example.operators.postprocessing.PostProcessing
 import org.example.strategies.evolution.EvolutionCycle
 
 
 class SimplePopulationManager<S : Solution, P : Problem<S>>(
-    private val population: Population<S, P>
+    private val population: Population<S, P>,
+    private val problem: P,
+    private val generator: suspend (P) -> S
 ) : PopulationManager<S, P> {
 
     constructor(
         capacity: Int,
         problem: P,
-        generator: (P) -> S
-    ) : this(
-        Population<S, P>(capacity).also { pop ->
-            pop.initializeRandom(problem, generator)
-        }
-    )
+        generator: suspend (P) -> S
+    ) : this(Population<S, P>(capacity), problem, generator)
+
+
+    override suspend fun initialize() {
+        population.initializeRandom(problem, generator)
+    }
 
     override fun getAll(): List<S> = population.getAll()
 
@@ -27,7 +31,11 @@ class SimplePopulationManager<S : Solution, P : Problem<S>>(
 
     override val size: Int get() = population.size
 
-    override fun evolve(cycle: EvolutionCycle<S, P>, p: P) {
+    override suspend fun evolve(cycle: EvolutionCycle<S, P>, p: P) {
         cycle.execute(population, p)
+    }
+
+    override fun rehope(p: P, mutation: PostProcessing<S, P>) {
+        population.rehope(p, mutation)
     }
 }

@@ -1,11 +1,17 @@
 package org.example.model
 
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
+import org.example.operators.postprocessing.PostProcessing
+
 
 class Population<S : Solution, P : Problem<S>>(
     val capacity: Int,
     initialIndividuals: List<S> = emptyList()
 ) {
     private val individuals: MutableList<S> = initialIndividuals.toMutableList()
+    private val personalBests: MutableList<S> = mutableListOf()
 
     val size: Int get() = individuals.size
 
@@ -33,12 +39,45 @@ class Population<S : Solution, P : Problem<S>>(
         individuals.addAll(newIndividuals.take(capacity))
     }
 
-    fun isFull(): Boolean = individuals.size >= capacity
-
-    fun initializeRandom(problem: P, solutionGenerator: (P) -> S) {
+    suspend fun initializeRandom(problem: P, solutionGenerator: suspend (P) -> S) {
         individuals.clear()
-        repeat(capacity) {
-            individuals.add(solutionGenerator(problem))
+        coroutineScope {
+            val jobs = List(capacity) {
+                async { solutionGenerator(problem) }
+            }
+            individuals.addAll(jobs.awaitAll())
+        }
+    }
+
+    fun initPersonalBests() {
+        personalBests.clear()
+        for (ind in individuals) {
+            personalBests.add(copySolution(ind))
+        }
+    }
+
+    fun rehope(problem: P, mutation: PostProcessing<S, P>) {
+        if (personalBests.isEmpty()) {
+            initPersonalBests()
+        }
+        for (i in individuals.indices) {
+            val current = individuals[i]
+            val pbest = personalBests[i]
+            if (problem.fitness(current) < problem.fitness(pbest)) {
+                personalBests[i] = copySolution(current)
+            }
+        }
+        val newIndividuals = personalBests.map { mutation.doSomething(it, problem) }
+        replaceAll(newIndividuals)
+    }
+
+    private fun copySolution(solution: S): S {
+        return when (solution) {
+            is Tour<*> -> {
+                @Suppress("UNCHECKED_CAST")
+                Tour(solution.list.toList()) as S
+            }
+            else -> solution
         }
     }
 }

@@ -7,5 +7,5 @@ import org.example.model.Tour
 import org.example.model.Vertex
 
 interface Solver<S : Solution, P : Problem<S>> {
-    fun solve(p: P): S
+    suspend fun solve(p: P): S
 }

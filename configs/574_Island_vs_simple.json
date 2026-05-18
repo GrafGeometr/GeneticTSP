@@ -1,0 +1,39 @@
+{
+  "common": {
+    "maxGenerations": 400,
+    "repeats": 3,
+    "csvLogRate": 10,
+    "consoleLogRate": 10,
+    "logImprovements": true,
+    "noHopeThreshold": 0,
+    "maxStagnation": -1
+  },
+  "algorithms": [
+    {
+      "name": "LS1_big",
+      "maxGenerations": 200,
+      "population": { "type": "simple", "capacity": 24 },
+      "cycle": { "type": "classic" },
+      "selection": { "type": "UnbiasedTournament" },
+      "crossover": { "type": "OX" },
+      "mutation": { "type": "Scramble", "rate": 0.1 },
+      "localSearch": { "enabled": true, "probability": 1.0 }
+    },
+    {
+      "name": "Island_LSmax_big",
+      "maxGenerations": 200,
+      "population": { "type": "island", "islandCount": 4, "islandCapacity": 6 },
+      "cycle": { "type": "classic" },
+      "selection": { "type": "UnbiasedTournament" },
+      "crossover": { "type": "OX" },
+      "mutation": { "type": "Scramble", "rate": 0.1 },
+      "localSearch": { "enabled": true, "probability": 1.0 }
+    }
+  ],
+  "datasets": [
+    {
+      "name": "tsp_574_1",
+      "path": "data/tsp_574_1"
+    }
+  ]
+}

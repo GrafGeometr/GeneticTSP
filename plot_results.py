@@ -1,9 +1,11 @@
+#!/usr/bin/env python3
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 from pathlib import Path
 import seaborn as sns
-import re
+import argparse
+import sys
 
 RESULTS_DIR = Path("results")
 PLOTS_DIR = Path("plots")
@@ -15,10 +17,17 @@ COLORMAP = plt.cm.tab10
 
 sns.set_style("whitegrid")
 
+
 def load_run(file_path):
-    df = pd.read_csv(file_path)
-    df.columns = df.columns.str.lower()
-    return df
+    try:
+        df = pd.read_csv(file_path)
+        if df.empty:
+            return None
+        df.columns = df.columns.str.lower()
+        return df
+    except (pd.errors.EmptyDataError, Exception):
+        return None
+
 
 def get_common_generations(runs):
     gen0 = runs[0]['generation'].values
@@ -26,6 +35,7 @@ def get_common_generations(runs):
         if not np.array_equal(run['generation'].values, gen0):
             return np.sort(pd.concat([r['generation'] for r in runs]).unique())
     return gen0
+
 
 def prepare_algo_data(runs):
     common_gen = get_common_generations(runs)
@@ -47,10 +57,16 @@ def prepare_algo_data(runs):
         'unique_matrix': unique_mat
     }
 
-def plot_individual_algorithm(dataset_name, algo_name, runs):
+
+def plot_individual_algorithm(dataset_name, algo_name, runs, save_dir=None):
     data = prepare_algo_data(runs)
-    ds_plot_dir = PLOTS_DIR / dataset_name
-    ds_plot_dir.mkdir(exist_ok=True)
+    if save_dir is None:
+        save_dir = PLOTS_DIR / dataset_name / algo_name
+    save_dir.mkdir(parents=True, exist_ok=True)
+
+    def save_fig(fig, name):
+        fig.savefig(save_dir / f'{name}.png', dpi=150)
+        plt.close(fig)
 
     fig, ax = plt.subplots(figsize=FIG_SIZE)
     for i, run in enumerate(runs):
@@ -63,8 +79,7 @@ def plot_individual_algorithm(dataset_name, algo_name, runs):
     ax.set_xlabel('Generation')
     ax.set_ylabel('Fitness')
     fig.tight_layout()
-    fig.savefig(ds_plot_dir / f'{algo_name}_fitness.png', dpi=150)
-    plt.close(fig)
+    save_fig(fig, 'fitness')
 
     fig, ax = plt.subplots(figsize=FIG_SIZE)
     for i, run in enumerate(runs):
@@ -78,8 +93,7 @@ def plot_individual_algorithm(dataset_name, algo_name, runs):
     ax.set_xlabel('Generation')
     ax.set_ylabel('Fitness')
     fig.tight_layout()
-    fig.savefig(ds_plot_dir / f'{algo_name}_fitness_log.png', dpi=150)
-    plt.close(fig)
+    save_fig(fig, 'fitness_log')
 
     min_best_overall = np.min(data['best_matrix'])
     threshold = min_best_overall * 1.5
@@ -101,8 +115,7 @@ def plot_individual_algorithm(dataset_name, algo_name, runs):
     ax.set_xlabel('Generation')
     ax.set_ylabel('Fitness')
     fig.tight_layout()
-    fig.savefig(ds_plot_dir / f'{algo_name}_fitness_tail.png', dpi=150)
-    plt.close(fig)
+    save_fig(fig, 'fitness_tail')
 
     fig, ax = plt.subplots(figsize=FIG_SIZE)
     for i, run in enumerate(runs):
@@ -113,8 +126,7 @@ def plot_individual_algorithm(dataset_name, algo_name, runs):
     ax.legend(fontsize='small')
     ax.set_ylim(0, 1.05)
     fig.tight_layout()
-    fig.savefig(ds_plot_dir / f'{algo_name}_diversity.png', dpi=150)
-    plt.close(fig)
+    save_fig(fig, 'diversity')
 
     uniq_mat = data['unique_matrix']
     data_min = np.min(uniq_mat)
@@ -129,90 +141,15 @@ def plot_individual_algorithm(dataset_name, algo_name, runs):
     ax.legend(fontsize='small')
     ax.set_ylim(data_min - margin, data_max + margin)
     fig.tight_layout()
-    fig.savefig(ds_plot_dir / f'{algo_name}_diversity_scaled.png', dpi=150)
-    plt.close(fig)
+    save_fig(fig, 'diversity_scaled')
 
-def classify(algo_name):
-    feat = {'pop': 'simple' if 'Simple_' in algo_name else 'island',
-            'cycle': 'classic' if 'Classic' in algo_name else 'steady',
-            'crossover': 'Uniform' if 'Uniform' in algo_name else 'OX'}
-
-    # Тип мутации
-    if 'Inversion' in algo_name:
-        feat['mutation'] = 'Inversion'
-    elif 'Scramble' in algo_name:
-        feat['mutation'] = 'Scramble'
-    else:
-        feat['mutation'] = 'Swap'
-
-
-    m = re.search(r'Swap(\d+\.?\d*)', algo_name)
-    if m and m.group(1) not in ('', '0'):
-        rate_str = m.group(1)
-        if '.' in rate_str:
-            feat['mutation_rate'] = float(rate_str)
-        else:
-            rate_val = float(rate_str)
-            if rate_val < 1:
-                feat['mutation_rate'] = rate_val
-            elif rate_val >= 100:
-                feat['mutation_rate'] = rate_val / 1000
-            elif rate_val >= 10:
-                feat['mutation_rate'] = rate_val / 100
-            else:
-                feat['mutation_rate'] = rate_val / 10
-
-            if len(rate_str) == 2:
-                feat['mutation_rate'] = rate_val / 10
-            elif len(rate_str) == 3:
-                feat['mutation_rate'] = rate_val / 100
-            else:
-                feat['mutation_rate'] = rate_val / 10
-    elif feat['mutation'] == 'Swap':
-        feat['mutation_rate'] = 0.1
-    else:
-        feat['mutation_rate'] = None
-
-    m = re.search(r'LS(\d+)', algo_name)
-    if m:
-        digits = m.group(1)
-        val = float(digits)
-        if len(digits) == 2:
-            feat['ls_prob'] = val / 10
-        else:
-            feat['ls_prob'] = val / 100
-        feat['use_ls'] = True
-    else:
-        feat['ls_prob'] = None
-        feat['use_ls'] = 'noLS' not in algo_name
-
-    if 'unbiasedSel' in algo_name:
-        feat['selection'] = 'UnbiasedTournament'
-    elif 'parSel75' in algo_name:
-        feat['selection'] = 'Parameterized75'
-    elif 'parSel90' in algo_name:
-        feat['selection'] = 'Parameterized90'
-    else:
-        feat['selection'] = 'SimpleTournament2'
-
-    if feat['pop'] == 'island':
-        m = re.search(r'islandCap(\d+)', algo_name)
-        feat['pop_size'] = int(m.group(1)) if m else 60
-        m = re.search(r'migr(\d+\.?\d*)', algo_name)
-        feat['migration_rate'] = float(m.group(1)) if m else 0.1
-    else:
-        m = re.search(r'cap(\d+)', algo_name)
-        feat['pop_size'] = int(m.group(1)) if m else 300
-        feat['migration_rate'] = None
-
-    return feat
 
 def plot_comparison(dataset_name, algos_dict, group_name, metric='avg_best',
                     ylabel=None, title_prefix=None, log=False, ylim=None, save_dir=None):
     if len(algos_dict) < 2:
         return
     if save_dir is None:
-        save_dir = PLOTS_DIR / dataset_name
+        save_dir = PLOTS_DIR / dataset_name / "comparisons" / group_name
     save_dir.mkdir(parents=True, exist_ok=True)
 
     fig, ax = plt.subplots(figsize=FIG_SIZE)
@@ -230,11 +167,16 @@ def plot_comparison(dataset_name, algos_dict, group_name, metric='avg_best',
     ax.set_title(title)
     ax.legend()
     fig.tight_layout()
-    filename = f"{group_name}_{metric}.png"
+    filename = f"{metric}.png"
     fig.savefig(save_dir / filename, dpi=150)
     plt.close(fig)
 
-def plot_comparison_with_tail(dataset_name, algos_dict, group_name, save_dir):
+
+def plot_comparison_with_tail(dataset_name, algos_dict, group_name, save_dir=None):
+    if save_dir is None:
+        save_dir = PLOTS_DIR / dataset_name / "comparisons" / group_name
+    save_dir.mkdir(parents=True, exist_ok=True)
+
     plot_comparison(dataset_name, algos_dict, group_name, metric='avg_best',
                     ylabel='Avg Best Fitness', title_prefix=group_name, save_dir=save_dir)
     plot_comparison(dataset_name, algos_dict, group_name, metric='avg_best',
@@ -264,7 +206,12 @@ def plot_comparison_with_tail(dataset_name, algos_dict, group_name, save_dir):
                     ylabel='Avg Best Fitness', title_prefix=f"{group_name} (zoom tail)",
                     ylim=(bottom_y, top_y), save_dir=save_dir)
 
-def plot_comparison_diversity(dataset_name, algos_dict, group_name, save_dir):
+
+def plot_comparison_diversity(dataset_name, algos_dict, group_name, save_dir=None):
+    if save_dir is None:
+        save_dir = PLOTS_DIR / dataset_name / "comparisons" / group_name
+    save_dir.mkdir(parents=True, exist_ok=True)
+
     plot_comparison(dataset_name, algos_dict, group_name, metric='avg_unique',
                     ylabel='Avg Unique Edges', title_prefix=f"{group_name} Diversity",
                     ylim=(0, 1.05), save_dir=save_dir)
@@ -276,122 +223,77 @@ def plot_comparison_diversity(dataset_name, algos_dict, group_name, save_dir):
                     ylabel='Avg Unique Edges', title_prefix=f"{group_name} Diversity (scaled)",
                     ylim=(data_min - margin, data_max + margin), save_dir=save_dir)
 
-def split_by_cycle(grp_dict):
-    """Разделяет словарь на classic и steady подгруппы."""
-    sub = {'classic': {}, 'steady': {}}
-    for name, data in grp_dict.items():
-        if 'Classic' in name:
-            sub['classic'][name] = data
-        else:
-            sub['steady'][name] = data
-    return {k: v for k, v in sub.items() if v}
 
-def process_group(dataset_name, group_name, grp_dict, split_cycle=True):
-    comp_dir = PLOTS_DIR / dataset_name / "comparisons" / group_name
-    if not split_cycle or group_name == 'Cycle':
-        if len(grp_dict) >= 2:
-            plot_comparison_with_tail(dataset_name, grp_dict, group_name, comp_dir)
-            plot_comparison_diversity(dataset_name, grp_dict, group_name, comp_dir)
-        return
-    sub_groups = split_by_cycle(grp_dict)
-    for suffix, sub_dict in sub_groups.items():
-        if len(sub_dict) >= 2:
-            full_name = f"{group_name}_{suffix}"
-            plot_comparison_with_tail(dataset_name, sub_dict, full_name, comp_dir)
-            plot_comparison_diversity(dataset_name, sub_dict, full_name, comp_dir)
+def list_datasets():
+    return sorted([d.name for d in RESULTS_DIR.iterdir() if d.is_dir()])
+
+
+def list_algos_for_dataset(dataset_name):
+    ds_path = RESULTS_DIR / dataset_name
+    if not ds_path.exists():
+        return []
+    return sorted([d.name for d in ds_path.iterdir() if d.is_dir()])
+
 
 def main():
-    datasets = [d for d in RESULTS_DIR.iterdir() if d.is_dir()]
-    if not datasets:
-        print("Results folder empty")
+    parser = argparse.ArgumentParser(description='Plot TSP experiment results.')
+    parser.add_argument('--dataset', required=True, help='Dataset name (e.g. tsp_51_1)')
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument('--algo', help='Single algorithm name to plot')
+    group.add_argument('--algos', nargs='+', help='List of algorithm names to compare')
+    parser.add_argument('--group-name', help='Custom name for comparison group (default: auto-generated from algo names)')
+    args = parser.parse_args()
+
+    ds_path = RESULTS_DIR / args.dataset
+    if not ds_path.exists():
+        print(f"Dataset {args.dataset} not found in results/")
         return
 
-    for ds_dir in datasets:
-        ds_name = ds_dir.name
-        print(f"\n{'='*60}")
-        print(f"Processing dataset: {ds_name}")
-        all_data = {}
+    if args.algo:
+        algo_dir = ds_path / args.algo
+        if not algo_dir.exists():
+            print(f"Algorithm {args.algo} not found for dataset {args.dataset}")
+            return
+        csv_files = sorted(algo_dir.glob("run_*.csv"))
+        if not csv_files:
+            print(f"No CSV runs found for {args.algo} in {args.dataset}")
+            return
+        runs = [load_run(f) for f in csv_files]
+        runs = [r for r in runs if r is not None]
+        if not runs:
+            print("No valid run data loaded.")
+            return
+        plot_individual_algorithm(args.dataset, args.algo, runs)
+        print(f"Individual plots saved for {args.algo} in plots/{args.dataset}/{args.algo}/")
+        return
 
-        for algo_dir in sorted(ds_dir.iterdir()):
-            if not algo_dir.is_dir():
+    if args.algos:
+        algos_dict = {}
+        for algo in args.algos:
+            algo_dir = ds_path / algo
+            if not algo_dir.exists():
+                print(f"Algorithm {algo} not found, skipping")
                 continue
-            algo_name = algo_dir.name
             csv_files = sorted(algo_dir.glob("run_*.csv"))
             if not csv_files:
+                print(f"No runs for {algo}, skipping")
                 continue
             runs = [load_run(f) for f in csv_files]
-            plot_individual_algorithm(ds_name, algo_name, runs)
-            all_data[algo_name] = prepare_algo_data(runs)
-
-        groups = {
-            'Cycle': {},
-            'PopType': {},
-            'Mutation': {},
-            'Selection': {},
-            'Crossover': {},
-            'LSProbability': {}
-        }
-
-        for name, data in all_data.items():
-            f = classify(name)
-
-            if (f['pop'] == 'island' and f['crossover'] == 'OX' and f['mutation'] == 'Swap' and
-                    f['mutation_rate'] == 0.1 and f['use_ls'] and f['ls_prob'] == 0.01 and
-                    f['selection'] == 'SimpleTournament2' and f['pop_size'] == 60 and
-                    f['migration_rate'] == 0.1):
-                groups['Cycle'][name] = data
-
-            if (f['crossover'] == 'OX' and f['mutation'] == 'Swap' and
-                    f['mutation_rate'] == 0.1 and f['use_ls'] and f['ls_prob'] == 0.01 and
-                    f['selection'] == 'SimpleTournament2'):
-                if f['pop'] == 'island' and f['pop_size'] == 60 and f['migration_rate'] == 0.1:
-                    groups['PopType'][name] = data
-                elif f['pop'] == 'simple' and f['pop_size'] == 300:
-                    groups['PopType'][name] = data
-
-            if (f['pop'] == 'island' and f['crossover'] == 'OX' and
-                    f['use_ls'] and f['ls_prob'] == 0.01 and
-                    f['selection'] == 'SimpleTournament2' and
-                    f['pop_size'] == 60 and f['migration_rate'] == 0.1):
-                groups['Mutation'][name] = data
-
-            if (f['pop'] == 'island' and f['crossover'] == 'OX' and
-                    f['mutation'] == 'Swap' and f['mutation_rate'] == 0.1 and
-                    f['use_ls'] and f['ls_prob'] == 0.01):
-                groups['Selection'][name] = data
-
-            if (f['pop'] == 'island' and f['mutation'] == 'Swap' and
-                    f['mutation_rate'] == 0.1 and f['use_ls'] and f['ls_prob'] == 0.01 and
-                    f['selection'] == 'SimpleTournament2' and
-                    f['pop_size'] == 60 and f['migration_rate'] == 0.1):
-                groups['Crossover'][name] = data
-
-            if (f['pop'] == 'island' and f['crossover'] == 'OX' and
-                    f['mutation'] == 'Swap' and f['mutation_rate'] == 0.1 and
-                    f['selection'] == 'SimpleTournament2'):
-                groups['LSProbability'][name] = data
-
-        for grp_name, grp_dict in groups.items():
-            n = len(grp_dict)
-            print(f"  Group '{grp_name}': {n} configs", end="")
-            if n > 0:
-                names = list(grp_dict.keys())
-                print(f" {names[0]}, ..., {names[-1]}" if len(names) > 2 else f" {', '.join(names)}")
-            else:
-                print("  EMPTY!")
-
-        for grp_name, grp_dict in groups.items():
-            if len(grp_dict) < 2:
-                if len(grp_dict) == 0:
-                    print(f"  Skipping '{grp_name}' (no configs matched)")
-                else:
-                    print(f"  Skipping '{grp_name}' (only 1 config: {list(grp_dict.keys())[0]})")
+            runs = [r for r in runs if r is not None]
+            if not runs:
+                print(f"No valid run data for {algo}, skipping")
                 continue
-            split = (grp_name != 'Cycle')
-            process_group(ds_name, grp_name, grp_dict, split_cycle=split)
+            algos_dict[algo] = prepare_algo_data(runs)
 
-    print("\n" + "="*60)
-    print("Done. Plots saved in plots/")
+        if len(algos_dict) < 2:
+            print("Not enough algorithms to compare (need at least 2).")
+            return
+
+        group_name = args.group_name if args.group_name else "_vs_".join(args.algos)
+        plot_comparison_with_tail(args.dataset, algos_dict, group_name)
+        plot_comparison_diversity(args.dataset, algos_dict, group_name)
+        print(f"Comparison plots saved in plots/{args.dataset}/comparisons/{group_name}/")
+
 
 if __name__ == "__main__":
     main()

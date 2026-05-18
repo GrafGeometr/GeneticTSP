@@ -26,6 +26,7 @@ object ExperimentRunner {
                     async(Dispatchers.Default) {
                         val problem = GraphLoader.loadPointsFromResource(ds.path)
                         val pm = algo.populationManagerFactory(problem)
+                        pm.initialize()
 
                         val collector = MetricsCollector<Point>(
                             File(algoDir, "run_$runIdx.csv").path,
@@ -42,16 +43,19 @@ object ExperimentRunner {
                             if (algo.logImprovements && bestFit < lastBest) {
                                 println("${algo.name} [${ds.name}] run $runIdx | gen $gen : new best = $bestFit")
                                 lastBest = bestFit
-                            } else if (!algo.logImprovements || gen % algo.consoleLogRate == 0) {
+                            } else if (gen % algo.consoleLogRate == 0) {
                                 println("${algo.name} [${ds.name}] run $runIdx | gen $gen : best = $bestFit (no improvement)")
                             }
                         }
 
+                        val rehopeMutation = algo.rehopeMutationFactory()
                         val solver = ModularSolver(
                             populationManager = pm,
                             evolutionCycle = algo.evolutionCycleFactory(),
                             maxGenerations = algo.maxGenerations,
                             maxStagnation = algo.maxStagnation,
+                            noHopeThreshold = algo.noHopeThreshold,
+                            rehopeMutation = rehopeMutation,
                             callback = compositeCallback
                         )
 

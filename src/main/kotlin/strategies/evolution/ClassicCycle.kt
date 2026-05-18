@@ -1,5 +1,6 @@
 package org.example.strategies.evolution
 
+import kotlinx.coroutines.*
 import org.example.model.Population
 import org.example.model.Problem
 import org.example.model.Solution
@@ -13,24 +14,29 @@ class ClassicCycle<S : Solution, P : Problem<S>>(
     private val postProcessing: PostProcessing<S, P>? = null,
     private val elitismCount: Int = 2
 ) : EvolutionCycle<S, P> {
-    override fun execute(population: Population<S, P>, problem: P) {
+    override suspend fun execute(population: Population<S, P>, problem: P) {
         val oldPop = population.getAll()
         val capacity = population.capacity
         val newPop = mutableListOf<S>()
-
         newPop.addAll(oldPop.sortedBy { problem.fitness(it) }.take(elitismCount))
 
         val parentPairs = selection.select(oldPop, problem)
-        var pairIdx = 0
-        while (newPop.size < capacity && pairIdx < parentPairs.size) {
-            val (p1, p2) = parentPairs[pairIdx++]
-            val children = crossover.merge(p1, p2, problem)
-            for (child in children) {
+
+        coroutineScope {
+            val jobs = parentPairs.map { (p1, p2) ->
+                async(Dispatchers.Default) {
+                    val children = crossover.merge(p1, p2, problem)
+                    children.map { child ->
+                        postProcessing?.doSomething(child, problem) ?: child
+                    }
+                }
+            }
+            val allChildren = jobs.awaitAll().flatten()
+            for (child in allChildren) {
                 if (newPop.size >= capacity) break
-                newPop.add(postProcessing?.doSomething(child, problem) ?: child)
+                newPop.add(child)
             }
         }
-
         population.replaceAll(newPop)
     }
 }

@@ -1,0 +1,1197 @@
+{
+  "common": {
+    "maxGenerations": 400,
+    "repeats": 3,
+    "csvLogRate": 10,
+    "consoleLogRate": 10,
+    "logImprovements": true,
+    "noHopeThreshold": 0,
+    "maxStagnation": -1
+  },
+  "algorithms": [
+    {
+      "name": "LSprob_0",
+      "population": {
+        "type": "simple",
+        "capacity": 24
+      },
+      "cycle": {
+        "type": "classic"
+      },
+      "selection": {
+        "type": "UnbiasedTournament"
+      },
+      "crossover": {
+        "type": "OX"
+      },
+      "mutation": {
+        "type": "Swap",
+        "rate": 0.1
+      },
+      "localSearch": {
+        "enabled": false
+      }
+    },
+    {
+      "name": "LSprob_0.01",
+      "population": {
+        "type": "simple",
+        "capacity": 24
+      },
+      "cycle": {
+        "type": "classic"
+      },
+      "selection": {
+        "type": "UnbiasedTournament"
+      },
+      "crossover": {
+        "type": "OX"
+      },
+      "mutation": {
+        "type": "Swap",
+        "rate": 0.1
+      },
+      "localSearch": {
+        "enabled": true,
+        "probability": 0.01
+      }
+    },
+    {
+      "name": "LSprob_0.05",
+      "population": {
+        "type": "simple",
+        "capacity": 24
+      },
+      "cycle": {
+        "type": "classic"
+      },
+      "selection": {
+        "type": "UnbiasedTournament"
+      },
+      "crossover": {
+        "type": "OX"
+      },
+      "mutation": {
+        "type": "Swap",
+        "rate": 0.1
+      },
+      "localSearch": {
+        "enabled": true,
+        "probability": 0.05
+      }
+    },
+    {
+      "name": "LSprob_0.1",
+      "population": {
+        "type": "simple",
+        "capacity": 24
+      },
+      "cycle": {
+        "type": "classic"
+      },
+      "selection": {
+        "type": "UnbiasedTournament"
+      },
+      "crossover": {
+        "type": "OX"
+      },
+      "mutation": {
+        "type": "Swap",
+        "rate": 0.1
+      },
+      "localSearch": {
+        "enabled": true,
+        "probability": 0.1
+      }
+    },
+    {
+      "name": "LSprob_0.2",
+      "population": {
+        "type": "simple",
+        "capacity": 24
+      },
+      "cycle": {
+        "type": "classic"
+      },
+      "selection": {
+        "type": "UnbiasedTournament"
+      },
+      "crossover": {
+        "type": "OX"
+      },
+      "mutation": {
+        "type": "Swap",
+        "rate": 0.1
+      },
+      "localSearch": {
+        "enabled": true,
+        "probability": 0.2
+      }
+    },
+    {
+      "name": "LSprob_0.5",
+      "population": {
+        "type": "simple",
+        "capacity": 24
+      },
+      "cycle": {
+        "type": "classic"
+      },
+      "selection": {
+        "type": "UnbiasedTournament"
+      },
+      "crossover": {
+        "type": "OX"
+      },
+      "mutation": {
+        "type": "Swap",
+        "rate": 0.1
+      },
+      "localSearch": {
+        "enabled": true,
+        "probability": 0.5
+      }
+    },
+    {
+      "name": "LSprob_1.0",
+      "population": {
+        "type": "simple",
+        "capacity": 24
+      },
+      "cycle": {
+        "type": "classic"
+      },
+      "selection": {
+        "type": "UnbiasedTournament"
+      },
+      "crossover": {
+        "type": "OX"
+      },
+      "mutation": {
+        "type": "Swap",
+        "rate": 0.1
+      },
+      "localSearch": {
+        "enabled": true,
+        "probability": 1.0
+      }
+    },
+    {
+      "name": "Mut_Swap_noLS",
+      "population": {
+        "type": "simple",
+        "capacity": 24
+      },
+      "cycle": {
+        "type": "classic"
+      },
+      "selection": {
+        "type": "UnbiasedTournament"
+      },
+      "crossover": {
+        "type": "OX"
+      },
+      "mutation": {
+        "type": "Swap",
+        "rate": 0.1
+      },
+      "localSearch": {
+        "enabled": false
+      }
+    },
+    {
+      "name": "Mut_Swap_LSmax",
+      "population": {
+        "type": "simple",
+        "capacity": 24
+      },
+      "cycle": {
+        "type": "classic"
+      },
+      "selection": {
+        "type": "UnbiasedTournament"
+      },
+      "crossover": {
+        "type": "OX"
+      },
+      "mutation": {
+        "type": "Swap",
+        "rate": 0.1
+      },
+      "localSearch": {
+        "enabled": true,
+        "probability": 1.0
+      }
+    },
+    {
+      "name": "Mut_Inversion_noLS",
+      "population": {
+        "type": "simple",
+        "capacity": 24
+      },
+      "cycle": {
+        "type": "classic"
+      },
+      "selection": {
+        "type": "UnbiasedTournament"
+      },
+      "crossover": {
+        "type": "OX"
+      },
+      "mutation": {
+        "type": "Inversion",
+        "rate": 0.1
+      },
+      "localSearch": {
+        "enabled": false
+      }
+    },
+    {
+      "name": "Mut_Inversion_LSmax",
+      "population": {
+        "type": "simple",
+        "capacity": 24
+      },
+      "cycle": {
+        "type": "classic"
+      },
+      "selection": {
+        "type": "UnbiasedTournament"
+      },
+      "crossover": {
+        "type": "OX"
+      },
+      "mutation": {
+        "type": "Inversion",
+        "rate": 0.1
+      },
+      "localSearch": {
+        "enabled": true,
+        "probability": 1.0
+      }
+    },
+    {
+      "name": "Mut_Scramble_noLS",
+      "population": {
+        "type": "simple",
+        "capacity": 24
+      },
+      "cycle": {
+        "type": "classic"
+      },
+      "selection": {
+        "type": "UnbiasedTournament"
+      },
+      "crossover": {
+        "type": "OX"
+      },
+      "mutation": {
+        "type": "Scramble"
+      },
+      "localSearch": {
+        "enabled": false
+      }
+    },
+    {
+      "name": "Mut_Scramble_LSmax",
+      "population": {
+        "type": "simple",
+        "capacity": 24
+      },
+      "cycle": {
+        "type": "classic"
+      },
+      "selection": {
+        "type": "UnbiasedTournament"
+      },
+      "crossover": {
+        "type": "OX"
+      },
+      "mutation": {
+        "type": "Scramble"
+      },
+      "localSearch": {
+        "enabled": true,
+        "probability": 1.0
+      }
+    },
+    {
+      "name": "Pop_simple_noLS",
+      "population": {
+        "type": "simple",
+        "capacity": 24
+      },
+      "cycle": {
+        "type": "classic"
+      },
+      "selection": {
+        "type": "UnbiasedTournament"
+      },
+      "crossover": {
+        "type": "OX"
+      },
+      "mutation": {
+        "type": "Swap",
+        "rate": 0.1
+      },
+      "localSearch": {
+        "enabled": false
+      }
+    },
+    {
+      "name": "Pop_simple_LSmax",
+      "population": {
+        "type": "simple",
+        "capacity": 24
+      },
+      "cycle": {
+        "type": "classic"
+      },
+      "selection": {
+        "type": "UnbiasedTournament"
+      },
+      "crossover": {
+        "type": "OX"
+      },
+      "mutation": {
+        "type": "Swap",
+        "rate": 0.1
+      },
+      "localSearch": {
+        "enabled": true,
+        "probability": 1.0
+      }
+    },
+    {
+      "name": "Pop_island_noLS",
+      "population": {
+        "type": "island",
+        "islandCount": 4,
+        "islandCapacity": 6
+      },
+      "cycle": {
+        "type": "classic"
+      },
+      "selection": {
+        "type": "UnbiasedTournament"
+      },
+      "crossover": {
+        "type": "OX"
+      },
+      "mutation": {
+        "type": "Swap",
+        "rate": 0.1
+      },
+      "localSearch": {
+        "enabled": false
+      }
+    },
+    {
+      "name": "Pop_island_LSmax",
+      "population": {
+        "type": "island",
+        "islandCount": 4,
+        "islandCapacity": 6
+      },
+      "cycle": {
+        "type": "classic"
+      },
+      "selection": {
+        "type": "UnbiasedTournament"
+      },
+      "crossover": {
+        "type": "OX"
+      },
+      "mutation": {
+        "type": "Swap",
+        "rate": 0.1
+      },
+      "localSearch": {
+        "enabled": true,
+        "probability": 1.0
+      }
+    },
+    {
+      "name": "Size_12_noLS",
+      "population": {
+        "type": "simple",
+        "capacity": 12
+      },
+      "cycle": {
+        "type": "classic"
+      },
+      "selection": {
+        "type": "UnbiasedTournament"
+      },
+      "crossover": {
+        "type": "OX"
+      },
+      "mutation": {
+        "type": "Swap",
+        "rate": 0.1
+      },
+      "localSearch": {
+        "enabled": false
+      }
+    },
+    {
+      "name": "Size_12_LSmax",
+      "population": {
+        "type": "simple",
+        "capacity": 12
+      },
+      "cycle": {
+        "type": "classic"
+      },
+      "selection": {
+        "type": "UnbiasedTournament"
+      },
+      "crossover": {
+        "type": "OX"
+      },
+      "mutation": {
+        "type": "Swap",
+        "rate": 0.1
+      },
+      "localSearch": {
+        "enabled": true,
+        "probability": 1.0
+      }
+    },
+    {
+      "name": "Size_24_noLS",
+      "population": {
+        "type": "simple",
+        "capacity": 24
+      },
+      "cycle": {
+        "type": "classic"
+      },
+      "selection": {
+        "type": "UnbiasedTournament"
+      },
+      "crossover": {
+        "type": "OX"
+      },
+      "mutation": {
+        "type": "Swap",
+        "rate": 0.1
+      },
+      "localSearch": {
+        "enabled": false
+      }
+    },
+    {
+      "name": "Size_24_LSmax",
+      "population": {
+        "type": "simple",
+        "capacity": 24
+      },
+      "cycle": {
+        "type": "classic"
+      },
+      "selection": {
+        "type": "UnbiasedTournament"
+      },
+      "crossover": {
+        "type": "OX"
+      },
+      "mutation": {
+        "type": "Swap",
+        "rate": 0.1
+      },
+      "localSearch": {
+        "enabled": true,
+        "probability": 1.0
+      }
+    },
+    {
+      "name": "Size_48_noLS",
+      "population": {
+        "type": "simple",
+        "capacity": 48
+      },
+      "cycle": {
+        "type": "classic"
+      },
+      "selection": {
+        "type": "UnbiasedTournament"
+      },
+      "crossover": {
+        "type": "OX"
+      },
+      "mutation": {
+        "type": "Swap",
+        "rate": 0.1
+      },
+      "localSearch": {
+        "enabled": false
+      }
+    },
+    {
+      "name": "Size_48_LSmax",
+      "population": {
+        "type": "simple",
+        "capacity": 48
+      },
+      "cycle": {
+        "type": "classic"
+      },
+      "selection": {
+        "type": "UnbiasedTournament"
+      },
+      "crossover": {
+        "type": "OX"
+      },
+      "mutation": {
+        "type": "Swap",
+        "rate": 0.1
+      },
+      "localSearch": {
+        "enabled": true,
+        "probability": 1.0
+      }
+    },
+    {
+      "name": "Cycle_Classic_noLS",
+      "population": {
+        "type": "simple",
+        "capacity": 24
+      },
+      "cycle": {
+        "type": "classic"
+      },
+      "selection": {
+        "type": "UnbiasedTournament"
+      },
+      "crossover": {
+        "type": "OX"
+      },
+      "mutation": {
+        "type": "Swap",
+        "rate": 0.1
+      },
+      "localSearch": {
+        "enabled": false
+      }
+    },
+    {
+      "name": "Cycle_Classic_LSmax",
+      "population": {
+        "type": "simple",
+        "capacity": 24
+      },
+      "cycle": {
+        "type": "classic"
+      },
+      "selection": {
+        "type": "UnbiasedTournament"
+      },
+      "crossover": {
+        "type": "OX"
+      },
+      "mutation": {
+        "type": "Swap",
+        "rate": 0.1
+      },
+      "localSearch": {
+        "enabled": true,
+        "probability": 1.0
+      }
+    },
+    {
+      "name": "Cycle_Steady_noLS",
+      "population": {
+        "type": "simple",
+        "capacity": 24
+      },
+      "cycle": {
+        "type": "steady",
+        "offspringCount": 10
+      },
+      "selection": {
+        "type": "UnbiasedTournament"
+      },
+      "crossover": {
+        "type": "OX"
+      },
+      "mutation": {
+        "type": "Swap",
+        "rate": 0.1
+      },
+      "localSearch": {
+        "enabled": false
+      }
+    },
+    {
+      "name": "Cycle_Steady_LSmax",
+      "population": {
+        "type": "simple",
+        "capacity": 24
+      },
+      "cycle": {
+        "type": "steady",
+        "offspringCount": 10
+      },
+      "selection": {
+        "type": "UnbiasedTournament"
+      },
+      "crossover": {
+        "type": "OX"
+      },
+      "mutation": {
+        "type": "Swap",
+        "rate": 0.1
+      },
+      "localSearch": {
+        "enabled": true,
+        "probability": 1.0
+      }
+    },
+    {
+      "name": "Cross_OX_noLS",
+      "population": {
+        "type": "simple",
+        "capacity": 24
+      },
+      "cycle": {
+        "type": "classic"
+      },
+      "selection": {
+        "type": "UnbiasedTournament"
+      },
+      "crossover": {
+        "type": "OX"
+      },
+      "mutation": {
+        "type": "Swap",
+        "rate": 0.1
+      },
+      "localSearch": {
+        "enabled": false
+      }
+    },
+    {
+      "name": "Cross_OX_LSmax",
+      "population": {
+        "type": "simple",
+        "capacity": 24
+      },
+      "cycle": {
+        "type": "classic"
+      },
+      "selection": {
+        "type": "UnbiasedTournament"
+      },
+      "crossover": {
+        "type": "OX"
+      },
+      "mutation": {
+        "type": "Swap",
+        "rate": 0.1
+      },
+      "localSearch": {
+        "enabled": true,
+        "probability": 1.0
+      }
+    },
+    {
+      "name": "Cross_Uniform_noLS",
+      "population": {
+        "type": "simple",
+        "capacity": 24
+      },
+      "cycle": {
+        "type": "classic"
+      },
+      "selection": {
+        "type": "UnbiasedTournament"
+      },
+      "crossover": {
+        "type": "Uniform"
+      },
+      "mutation": {
+        "type": "Swap",
+        "rate": 0.1
+      },
+      "localSearch": {
+        "enabled": false
+      }
+    },
+    {
+      "name": "Cross_Uniform_LSmax",
+      "population": {
+        "type": "simple",
+        "capacity": 24
+      },
+      "cycle": {
+        "type": "classic"
+      },
+      "selection": {
+        "type": "UnbiasedTournament"
+      },
+      "crossover": {
+        "type": "Uniform"
+      },
+      "mutation": {
+        "type": "Swap",
+        "rate": 0.1
+      },
+      "localSearch": {
+        "enabled": true,
+        "probability": 1.0
+      }
+    },
+    {
+      "name": "Cross_Particle_noLS",
+      "population": {
+        "type": "simple",
+        "capacity": 24
+      },
+      "cycle": {
+        "type": "classic"
+      },
+      "selection": {
+        "type": "UnbiasedTournament"
+      },
+      "crossover": {
+        "type": "ParticleLike"
+      },
+      "mutation": {
+        "type": "Swap",
+        "rate": 0.1
+      },
+      "localSearch": {
+        "enabled": false
+      }
+    },
+    {
+      "name": "Cross_Particle_LSmax",
+      "population": {
+        "type": "simple",
+        "capacity": 24
+      },
+      "cycle": {
+        "type": "classic"
+      },
+      "selection": {
+        "type": "UnbiasedTournament"
+      },
+      "crossover": {
+        "type": "ParticleLike"
+      },
+      "mutation": {
+        "type": "Swap",
+        "rate": 0.1
+      },
+      "localSearch": {
+        "enabled": true,
+        "probability": 1.0
+      }
+    },
+    {
+      "name": "Sel_Tourn_noLS",
+      "population": {
+        "type": "simple",
+        "capacity": 24
+      },
+      "cycle": {
+        "type": "classic"
+      },
+      "selection": {
+        "type": "SimpleTournament2"
+      },
+      "crossover": {
+        "type": "OX"
+      },
+      "mutation": {
+        "type": "Swap",
+        "rate": 0.1
+      },
+      "localSearch": {
+        "enabled": false
+      }
+    },
+    {
+      "name": "Sel_Tourn_LSmax",
+      "population": {
+        "type": "simple",
+        "capacity": 24
+      },
+      "cycle": {
+        "type": "classic"
+      },
+      "selection": {
+        "type": "SimpleTournament2"
+      },
+      "crossover": {
+        "type": "OX"
+      },
+      "mutation": {
+        "type": "Swap",
+        "rate": 0.1
+      },
+      "localSearch": {
+        "enabled": true,
+        "probability": 1.0
+      }
+    },
+    {
+      "name": "Sel_Unbiased_noLS",
+      "population": {
+        "type": "simple",
+        "capacity": 24
+      },
+      "cycle": {
+        "type": "classic"
+      },
+      "selection": {
+        "type": "UnbiasedTournament"
+      },
+      "crossover": {
+        "type": "OX"
+      },
+      "mutation": {
+        "type": "Swap",
+        "rate": 0.1
+      },
+      "localSearch": {
+        "enabled": false
+      }
+    },
+    {
+      "name": "Sel_Unbiased_LSmax",
+      "population": {
+        "type": "simple",
+        "capacity": 24
+      },
+      "cycle": {
+        "type": "classic"
+      },
+      "selection": {
+        "type": "UnbiasedTournament"
+      },
+      "crossover": {
+        "type": "OX"
+      },
+      "mutation": {
+        "type": "Swap",
+        "rate": 0.1
+      },
+      "localSearch": {
+        "enabled": true,
+        "probability": 1.0
+      }
+    },
+    {
+      "name": "Sel_Par75_noLS",
+      "population": {
+        "type": "simple",
+        "capacity": 24
+      },
+      "cycle": {
+        "type": "classic"
+      },
+      "selection": {
+        "type": "ParameterizedTournament",
+        "sv": 0.75
+      },
+      "crossover": {
+        "type": "OX"
+      },
+      "mutation": {
+        "type": "Swap",
+        "rate": 0.1
+      },
+      "localSearch": {
+        "enabled": false
+      }
+    },
+    {
+      "name": "Sel_Par75_LSmax",
+      "population": {
+        "type": "simple",
+        "capacity": 24
+      },
+      "cycle": {
+        "type": "classic"
+      },
+      "selection": {
+        "type": "ParameterizedTournament",
+        "sv": 0.75
+      },
+      "crossover": {
+        "type": "OX"
+      },
+      "mutation": {
+        "type": "Swap",
+        "rate": 0.1
+      },
+      "localSearch": {
+        "enabled": true,
+        "probability": 1.0
+      }
+    },
+    {
+      "name": "Sel_Par90_noLS",
+      "population": {
+        "type": "simple",
+        "capacity": 24
+      },
+      "cycle": {
+        "type": "classic"
+      },
+      "selection": {
+        "type": "ParameterizedTournament",
+        "sv": 0.9
+      },
+      "crossover": {
+        "type": "OX"
+      },
+      "mutation": {
+        "type": "Swap",
+        "rate": 0.1
+      },
+      "localSearch": {
+        "enabled": false
+      }
+    },
+    {
+      "name": "Sel_Par90_LSmax",
+      "population": {
+        "type": "simple",
+        "capacity": 24
+      },
+      "cycle": {
+        "type": "classic"
+      },
+      "selection": {
+        "type": "ParameterizedTournament",
+        "sv": 0.9
+      },
+      "crossover": {
+        "type": "OX"
+      },
+      "mutation": {
+        "type": "Swap",
+        "rate": 0.1
+      },
+      "localSearch": {
+        "enabled": true,
+        "probability": 1.0
+      }
+    },
+    {
+      "name": "Rehope_noLS",
+      "population": {
+        "type": "simple",
+        "capacity": 24
+      },
+      "cycle": {
+        "type": "classic"
+      },
+      "selection": {
+        "type": "UnbiasedTournament"
+      },
+      "crossover": {
+        "type": "OX"
+      },
+      "mutation": {
+        "type": "Swap",
+        "rate": 0.1
+      },
+      "localSearch": {
+        "enabled": false
+      },
+      "noHopeThreshold": 0
+    },
+    {
+      "name": "Rehope_LSmax",
+      "population": {
+        "type": "simple",
+        "capacity": 24
+      },
+      "cycle": {
+        "type": "classic"
+      },
+      "selection": {
+        "type": "UnbiasedTournament"
+      },
+      "crossover": {
+        "type": "OX"
+      },
+      "mutation": {
+        "type": "Swap",
+        "rate": 0.1
+      },
+      "localSearch": {
+        "enabled": true,
+        "probability": 1.0
+      },
+      "noHopeThreshold": 0
+    },
+    {
+      "name": "Rehope_rehope_noLS",
+      "population": {
+        "type": "simple",
+        "capacity": 24
+      },
+      "cycle": {
+        "type": "classic"
+      },
+      "selection": {
+        "type": "UnbiasedTournament"
+      },
+      "crossover": {
+        "type": "OX"
+      },
+      "mutation": {
+        "type": "Swap",
+        "rate": 0.1
+      },
+      "localSearch": {
+        "enabled": false
+      },
+      "noHopeThreshold": 100,
+      "rehope": {
+        "type": "Scramble"
+      }
+    },
+    {
+      "name": "Rehope_rehope_LSmax",
+      "population": {
+        "type": "simple",
+        "capacity": 24
+      },
+      "cycle": {
+        "type": "classic"
+      },
+      "selection": {
+        "type": "UnbiasedTournament"
+      },
+      "crossover": {
+        "type": "OX"
+      },
+      "mutation": {
+        "type": "Swap",
+        "rate": 0.1
+      },
+      "localSearch": {
+        "enabled": true,
+        "probability": 1.0
+      },
+      "noHopeThreshold": 100,
+      "rehope": {
+        "type": "Scramble"
+      }
+    },
+    {
+      "name": "Init_Random_noLS",
+      "population": {
+        "type": "simple",
+        "capacity": 24,
+        "initialGenerator": "random"
+      },
+      "cycle": {
+        "type": "classic"
+      },
+      "selection": {
+        "type": "UnbiasedTournament"
+      },
+      "crossover": {
+        "type": "OX"
+      },
+      "mutation": {
+        "type": "Swap",
+        "rate": 0.1
+      },
+      "localSearch": {
+        "enabled": false
+      }
+    },
+    {
+      "name": "Init_Random_LSmax",
+      "population": {
+        "type": "simple",
+        "capacity": 24,
+        "initialGenerator": "random"
+      },
+      "cycle": {
+        "type": "classic"
+      },
+      "selection": {
+        "type": "UnbiasedTournament"
+      },
+      "crossover": {
+        "type": "OX"
+      },
+      "mutation": {
+        "type": "Swap",
+        "rate": 0.1
+      },
+      "localSearch": {
+        "enabled": true,
+        "probability": 1.0
+      }
+    },
+    {
+      "name": "Init_Greedy_noLS",
+      "population": {
+        "type": "simple",
+        "capacity": 24,
+        "initialGenerator": "greedy"
+      },
+      "cycle": {
+        "type": "classic"
+      },
+      "selection": {
+        "type": "UnbiasedTournament"
+      },
+      "crossover": {
+        "type": "OX"
+      },
+      "mutation": {
+        "type": "Swap",
+        "rate": 0.1
+      },
+      "localSearch": {
+        "enabled": false
+      }
+    },
+    {
+      "name": "Init_Greedy_LSmax",
+      "population": {
+        "type": "simple",
+        "capacity": 24,
+        "initialGenerator": "greedy"
+      },
+      "cycle": {
+        "type": "classic"
+      },
+      "selection": {
+        "type": "UnbiasedTournament"
+      },
+      "crossover": {
+        "type": "OX"
+      },
+      "mutation": {
+        "type": "Swap",
+        "rate": 0.1
+      },
+      "localSearch": {
+        "enabled": true,
+        "probability": 1.0
+      }
+    }
+  ],
+  "datasets": [
+    {
+      "name": "tsp_100_3",
+      "path": "data/tsp_100_3"
+    },
+    {
+      "name": "tsp_200_2",
+      "path": "data/tsp_200_2"
+    }
+  ]
+}

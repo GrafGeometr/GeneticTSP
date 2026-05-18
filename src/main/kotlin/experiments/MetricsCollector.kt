@@ -22,6 +22,7 @@ class MetricsCollector<V : Vertex>(filePath: String, val loggingRate: Int = 10) 
         if (generation % loggingRate == 0) {
             val uniqueEdges = DiversityUtils.edgeDiversity(population)
             writer.println("$generation,$bestFitness,$averageFitness,$uniqueEdges")
+            writer.flush()
         }
     }
 
